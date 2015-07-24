@@ -879,3 +879,11 @@ constantly free the descriptor when an error takes place."""
     def allocate_handle(self):
         self.is_owned = True
         OCIHandleAlloc(self.environment, self.handle, oci.OCI_HTYPE_STMT, "Cursor_New()")
+
+    def table_exists(self, table_name, database_name=None):
+        query = "SELECT COUNT(*) FROM all_tables WHERE table_name = '%s'" % table_name.upper()
+        if database_name:
+            query += " AND owner = '%s'" % database_name.upper()
+        self.execute(query)
+        result = self.fetchone()
+        return result[0] > 0

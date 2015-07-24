@@ -4,7 +4,7 @@ import setuptools
 from cx_Oracle import version
 
 setuptools.setup(
-    name='cx_Oracle',
+    name='ctypes_Oracle',
     version=version,
     description='cx_Oracle on ctypes',
     license='BSD',

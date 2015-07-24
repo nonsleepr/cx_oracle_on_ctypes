@@ -193,6 +193,8 @@ class Connection(object):
 
     def __del__(self):
         """Deallocate the connection, disconnecting from the database if necessary."""
+        if not self.environment:
+            return
         if self.release:
             oci.OCITransRollback(self.handle, self.environment.error_handle, oci.OCI_DEFAULT)
             oci.OCISessionRelease(self.handle, self.environment.error_handle, None, 0, oci.OCI_DEFAULT)
@@ -203,7 +205,9 @@ class Connection(object):
             if self.server_handle:
                 oci.OCIServerDetach(self.server_handle, self.environment.error_handle, oci.OCI_DEFAULT)
 
-        self.environment = None # break GC cycle, needed at least for CPy because both Connection and Environment have __del__
+        oci.OCIHandleFree(self.environment.error_handle, oci.OCI_HTYPE_ERROR)
+        oci.OCIHandleFree(self.environment.handle, oci.OCI_HTYPE_ENV)
+        self.environment = None
                 
     def commit(self):
         """Commit the transaction on the connection."""
